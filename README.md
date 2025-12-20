@@ -9,17 +9,6 @@
 * копить на цели,
 * получать автоматические рекомендации по финансовой грамотности.
 
-
-## Скриншоты
-
-<p align="center">
-  <img width="1199" alt="image" src="https://github.com/user-attachments/assets/c9148a34-d619-4914-aacc-c6f752777243" />
-  <img width="1193" alt="image" src="https://github.com/user-attachments/assets/bc81fae7-a4fd-4ff8-b687-9391945c8e53" />
-  <img width="1189" alt="image" src="https://github.com/user-attachments/assets/f3abe0a4-01af-4a00-b87f-5b2eb21393d6" />
-  <img width="1190" alt="image" src="https://github.com/user-attachments/assets/bfdb1d61-bf86-41e3-bfce-2c2da6bc156a" />
-  <img width="1192" height="792" alt="image" src="https://github.com/user-attachments/assets/97541429-4eb1-427d-a10b-860f7c57f3cb" />
-</p>
-
 ---
 
 ## Технологический стек
@@ -30,6 +19,18 @@
 * **База данных:** PostgreSQL
 * **Архитектура:** Layered Architecture (MVC)
 * **Стиль кода:** строгое ООП, принципы SOLID
+
+---
+
+## Скриншоты
+
+<p align="center">
+  <img width="1199" alt="image" src="https://github.com/user-attachments/assets/c9148a34-d619-4914-aacc-c6f752777243" />
+  <img width="1193" alt="image" src="https://github.com/user-attachments/assets/bc81fae7-a4fd-4ff8-b687-9391945c8e53" />
+  <img width="1189" alt="image" src="https://github.com/user-attachments/assets/f3abe0a4-01af-4a00-b87f-5b2eb21393d6" />
+  <img width="1190" alt="image" src="https://github.com/user-attachments/assets/bfdb1d61-bf86-41e3-bfce-2c2da6bc156a" />
+  <img width="1192" height="792" alt="image" src="https://github.com/user-attachments/assets/97541429-4eb1-427d-a10b-860f7c57f3cb" />
+</p>
 
 ---
 
