@@ -177,22 +177,6 @@ CREATE TABLE goals (
 
 ---
 
-### 2️⃣ Сборка проекта
-
-1. Откройте `CMakeLists.txt` в **Qt Creator**
-2. В файле `Model/storage.cpp` укажите параметры подключения к БД:
-
-```cpp
-m_db.setHostName("127.0.0.1");
-m_db.setDatabaseName("ВАШЕ_ИМЯ_БД");
-m_db.setUserName("postgres");
-m_db.setPassword("ВАШ_ПАРОЛЬ");
-```
-
-3. Нажмите **Build** → **Run**
-
----
-
 ## Автор (Roman Snitko)
 
 Разработано в рамках курсовой работы по дисциплине
