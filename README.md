@@ -126,57 +126,6 @@
 
 ---
 
-## становка и запуск
-
-### Требования
-
-* Qt 6.5+
-* Компилятор C++ (MSVC или MinGW)
-* PostgreSQL
-
----
-
-### 1️⃣ Настройка базы данных
-
-Создайте базу данных `StudyMoney` (или `db`) и выполните SQL-скрипт:
-
-```sql
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    login VARCHAR(50) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    email VARCHAR(100),
-    budget NUMERIC(10, 2) DEFAULT 0,
-    spent NUMERIC(10, 2) DEFAULT 0
-);
-
-CREATE TABLE expenses (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    amount NUMERIC(10, 2) NOT NULL,
-    category VARCHAR(50),
-    date_added DATE DEFAULT CURRENT_DATE
-);
-
-CREATE TABLE incomes (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    amount NUMERIC(10, 2) NOT NULL,
-    source VARCHAR(50),
-    date_received DATE DEFAULT CURRENT_DATE
-);
-
-CREATE TABLE goals (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    name VARCHAR(100) NOT NULL,
-    target_amount NUMERIC(10, 2),
-    current_amount NUMERIC(10, 2) DEFAULT 0
-);
-```
-
----
-
 ## Автор (Roman Snitko)
 
 Разработано в рамках курсовой работы по дисциплине
