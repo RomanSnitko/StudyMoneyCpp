@@ -187,7 +187,7 @@ CREATE TABLE IF NOT EXISTS goals (
 Шаг 3. Запуск приложения
 
 * Перейдите в раздел Releases на GitHub
-* Скачайте архив StudyMoney_v1.0_Windows.zip
+* Скачайте архив StudyMoney_v1.0_Windows.zip или macOS Version (Apple Silicon/Intel)
 * Распакуйте архив
 * Запустите файл StudyMoney.exe
 * Нажмите «Регистрация», создайте аккаунт и пользуйтесь приложением 
