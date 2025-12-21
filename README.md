@@ -127,6 +127,56 @@ StudyMoney — это десктопное приложение для упра�
 
 ---
 
+🚀 Как запустить (Инструкция)
+Приложение работает с локальной базой данных PostgreSQL. Для корректного запуска выполните 3 простых шага:
+Шаг 1. Подготовка Базы Данных
+Приложение использует жестко заданные настройки подключения. Убедитесь, что у вас установлен PostgreSQL и выполните следующие действия (в pgAdmin или консоли):
+Создайте пустую базу данных с именем db.
+Убедитесь, что пароль пользователя postgres — 31072007.
+Шаг 2. Создание структуры
+Чтобы приложение могло сохранять данные, выполните этот SQL-скрипт в вашей базе данных (Query Tool):
+code
+SQL
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    login VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    email VARCHAR(100),
+    budget NUMERIC(10, 2) DEFAULT 0,
+    spent NUMERIC(10, 2) DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS expenses (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    amount NUMERIC(10, 2) NOT NULL,
+    category VARCHAR(50),
+    date_added DATE DEFAULT CURRENT_DATE
+);
+
+CREATE TABLE IF NOT EXISTS incomes (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    amount NUMERIC(10, 2) NOT NULL,
+    source VARCHAR(50),
+    date_received DATE DEFAULT CURRENT_DATE
+);
+
+CREATE TABLE IF NOT EXISTS goals (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    target_amount NUMERIC(10, 2),
+    current_amount NUMERIC(10, 2) DEFAULT 0
+);
+Шаг 3. Запуск приложения
+Перейдите в раздел Releases.
+Скачайте архив StudyMoney_v1.0_Windows.zip.
+Распакуйте его и запустите StudyMoney.exe.
+Нажмите "Регистрация", создайте аккаунт и пользуйтесь!
+
+---
+
 ## Автор (Roman Snitko)
 
 Разработано в рамках курсовой работы по дисциплине
@@ -135,3 +185,5 @@ StudyMoney — это десктопное приложение для упра�
 2025 год
 
 ---
+
+
