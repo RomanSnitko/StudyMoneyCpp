@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14 # Используем стабильный образ Apple Silicon
+    runs-on: macos-14
 
     steps:
     - name: Checkout code
@@ -20,39 +20,49 @@ jobs:
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
-        version: '6.6.0' # Более новая версия, стабильнее на Mac
+        version: '6.6.0'
         host: 'mac'
         target: 'desktop'
-        arch: 'clang_64' # Это универсальные бинарники (Intel + ARM)
+        arch: 'clang_64'
+        cache: 'true'
 
     - name: Install PostgreSQL
       run: brew install postgresql
 
-    - name: Create Build Directory
-      run: mkdir build
+    - name: List files (Debug)
+      # Эта команда покажет в логах, какие файлы реально скачались.
+      # Если CMakeLists.txt нет в списке, значит проблема в структуре репозитория.
+      run: ls -la
 
-    - name: Configure CMake
-      working-directory: ./build
+    - name: Build Project
       run: |
-        
+        # Добавляем пути к PostgreSQL (для процессоров Apple Silicon M1/M2)
+        # /opt/homebrew - стандартный путь для brew на новых маках
         export CMAKE_PREFIX_PATH="/opt/homebrew/opt/postgresql:$CMAKE_PREFIX_PATH"
+        export CMAKE_INCLUDE_PATH="/opt/homebrew/include"
+        export CMAKE_LIBRARY_PATH="/opt/homebrew/lib"
         
-        cmake .. \
-        -GNinja \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_PREFIX_PATH="$Qt6_DIR;/opt/homebrew"
+        # Запускаем CMake
+        # -S .        -> Исходный код в текущей папке (Source)
+        # -B build    -> Собирать в папку build (Build)
+        # -GNinja     -> Использовать быстрый компилятор Ninja
+        cmake -S . -B build \
+          -GNinja \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_PREFIX_PATH="$Qt6_DIR"
 
-    - name: Build
-      working-directory: ./build
-      run: ninja
+        # Компилируем
+        cmake --build build
 
-    - name: Deploy (Create .dmg)
+    - name: Deploy (Create DMG)
+      if: success()
       working-directory: ./build
       run: |
-        # Создаем образ диска
+        # Собираем все библиотеки в один файл .dmg
         macdeployqt StudyMoney.app -dmg -verbose=1
-        
+
     - name: Upload Artifact
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: StudyMoney-MacOS
