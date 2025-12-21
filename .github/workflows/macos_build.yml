@@ -8,50 +8,52 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-14 # Используем стабильный образ Apple Silicon
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+
+    - name: Install Ninja
+      run: brew install ninja
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
-        version: '6.5.0'
+        version: '6.6.0' # Более новая версия, стабильнее на Mac
         host: 'mac'
         target: 'desktop'
-        arch: 'clang_64'
+        arch: 'clang_64' # Это универсальные бинарники (Intel + ARM)
 
-    - name: Install PostgreSQL Libs
-      run: |
-        brew install postgresql
-        # Добавляем путь к библиотекам Homebrew (важно для M1/M2)
-        echo "CMAKE_PREFIX_PATH=/opt/homebrew/opt/postgresql@14:$CMAKE_PREFIX_PATH" >> $GITHUB_ENV
+    - name: Install PostgreSQL
+      run: brew install postgresql
 
     - name: Create Build Directory
       run: mkdir build
 
     - name: Configure CMake
       working-directory: ./build
-      
       run: |
+        
+        export CMAKE_PREFIX_PATH="/opt/homebrew/opt/postgresql:$CMAKE_PREFIX_PATH"
+        
         cmake .. \
-        -DCMAKE_PREFIX_PATH="$Qt6_DIR;/opt/homebrew" \
+        -GNinja \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_OSX_ARCHITECTURES=arm64
+        -DCMAKE_PREFIX_PATH="$Qt6_DIR;/opt/homebrew"
 
     - name: Build
       working-directory: ./build
-      run: make
+      run: ninja
 
     - name: Deploy (Create .dmg)
       working-directory: ./build
       run: |
-        # Собираем все библиотеки в один файл
-        macdeployqt StudyMoney.app -dmg -verbose=2
+        # Создаем образ диска
+        macdeployqt StudyMoney.app -dmg -verbose=1
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: StudyMoney-MacOS-Arm64
+        name: StudyMoney-MacOS
         path: build/StudyMoney.dmg
