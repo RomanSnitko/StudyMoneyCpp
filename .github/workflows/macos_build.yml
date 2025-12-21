@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-13
+    runs-on: macos-latest
 
     steps:
     - name: Checkout code
@@ -17,20 +17,28 @@ jobs:
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
-        version: '6.5.0' # Версия Qt
+        version: '6.5.0'
         host: 'mac'
         target: 'desktop'
         arch: 'clang_64'
 
-    - name: Install PostgreSQL (libpq)
-      run: brew install postgresql
+    - name: Install PostgreSQL Libs
+      run: |
+        brew install postgresql
+        # Добавляем путь к библиотекам Homebrew (важно для M1/M2)
+        echo "CMAKE_PREFIX_PATH=/opt/homebrew/opt/postgresql@14:$CMAKE_PREFIX_PATH" >> $GITHUB_ENV
 
     - name: Create Build Directory
       run: mkdir build
 
     - name: Configure CMake
       working-directory: ./build
-      run: cmake .. -DCMAKE_PREFIX_PATH=$Qt6_DIR -DCMAKE_BUILD_TYPE=Release
+      
+      run: |
+        cmake .. \
+        -DCMAKE_PREFIX_PATH="$Qt6_DIR;/opt/homebrew" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_OSX_ARCHITECTURES=arm64
 
     - name: Build
       working-directory: ./build
@@ -39,11 +47,11 @@ jobs:
     - name: Deploy (Create .dmg)
       working-directory: ./build
       run: |
-        # Используем macdeployqt для создания .dmg с библиотеками
-        macdeployqt StudyMoney.app -dmg
+        # Собираем все библиотеки в один файл
+        macdeployqt StudyMoney.app -dmg -verbose=2
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: StudyMoney-MacOS
+        name: StudyMoney-MacOS-Arm64
         path: build/StudyMoney.dmg
