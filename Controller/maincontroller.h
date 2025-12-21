@@ -1,9 +1,9 @@
-#ifndef MAINCONTROLLER_H
-#define MAINCONTROLLER_H
+#pragma once
 
 #include <QObject>
 #include <QVariant>
-#include "../Model/storage.h"
+#include "../Model/istorage.h"
+#include <memory>
 
 class MainController : public QObject
 {
@@ -29,19 +29,11 @@ public:
     explicit MainController(QObject *parent = nullptr);
     ~MainController();
 
-    double budget() const { return m_budget; }
-    double spent() const { return m_spent; }
-    double remainingAmount() const { return m_budget - m_spent; }
-    bool authorized() const { return m_authorized; }
-    bool loading() const { return m_loading; }
-    QString authError() const { return m_authError; }
-
     QVariantList lastExpenses() const;
     QVariantList weeklyExpenses() const;
     QVariantList analyticsData() const;
     QVariantList goalsModel() const;
     QVariantList incomeHistoryModel() const;
-
     QStringList recommendationText() const { return m_recommendations; }
     QVariantList recommendationChart() const { return m_recChartData; }
 
@@ -55,6 +47,13 @@ public:
     Q_INVOKABLE void topUpGoal(int goalId, double amount);
     Q_INVOKABLE void logout();
     Q_INVOKABLE void refreshData();
+
+    double budget() const { return m_budget; }
+    double spent() const { return m_spent; }
+    double remainingAmount() const { return m_budget - m_spent; }
+    bool authorized() const { return m_authorized; }
+    bool loading() const { return m_loading; }
+    QString authError() const { return m_authError; }
 
 signals:
     void budgetChanged();
@@ -72,7 +71,7 @@ signals:
     void recommendationChartChanged();
 
 private:
-    IStorage* m_storage;
+    std::unique_ptr<IStorage> m_storage;
     double m_budget = 0;
     double m_spent = 0;
 
@@ -83,5 +82,3 @@ private:
     QStringList m_recommendations;
     QVariantList m_recChartData;
 };
-
-#endif

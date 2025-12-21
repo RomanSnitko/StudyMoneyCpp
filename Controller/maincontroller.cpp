@@ -1,20 +1,22 @@
 #include "maincontroller.h"
+#include "../Model/sqlstorage.h"
 #include <QCryptographicHash>
 #include <QTimer>
+#include <memory>
 
 MainController::MainController(QObject *parent) : QObject(parent) {
-    m_storage = new SqlStorage();
+    m_storage = std::make_unique<SqlStorage>();
     m_storage->connect();
 }
 
 MainController::~MainController() {
-    delete m_storage;
 }
 
 QVariantList MainController::lastExpenses() const {
     if (!m_authorized) return {};
 
-    QList<QVariantMap> raw = m_storage->getLastOperations(m_currentUserId, 7);
+    int limit = 7;
+    QList<QVariantMap> raw = m_storage->getLastOperations(m_currentUserId, limit);
 
     QVariantList list;
     for (const auto &item : raw) {
@@ -25,34 +27,36 @@ QVariantList MainController::lastExpenses() const {
 
 QVariantList MainController::weeklyExpenses() const {
     if (!m_authorized) return {};
+
     QList<QVariantMap> raw = m_storage->getWeeklyExpenses(m_currentUserId);
+
     QVariantList list;
-    for(const auto &m : raw) list.append(m);
+    for(const auto &m : raw) {
+        list.append(m);
+    }
     return list;
 }
 
 QVariantList MainController::analyticsData() const {
     if (!m_authorized) return {};
+
     QList<QVariantMap> raw = m_storage->getAnalytics(m_currentUserId);
+
     QVariantList list;
-    for(const auto &m : raw) list.append(m);
+    for(const auto &m : raw) {
+        list.append(m);
+    }
     return list;
 }
 
 QVariantList MainController::goalsModel() const {
     if (!m_authorized) return {};
+
     QList<GoalData> goals = m_storage->getGoals(m_currentUserId);
+
     QVariantList list;
     for (const auto &g : goals) {
-        QVariantMap map;
-        map["id"] = g.id;
-        map["name"] = g.name;
-        map["target"] = g.target;
-        map["current"] = g.current;
-        double progress = (g.target > 0) ? (g.current / g.target) : 0;
-        if (progress > 1.0) progress = 1.0;
-        map["progress"] = progress;
-        list.append(map);
+        list.append(g.toMap());
     }
     return list;
 }
@@ -61,7 +65,9 @@ QVariantList MainController::incomeHistoryModel() const {
     if (!m_authorized) return {};
     QList<QVariantMap> raw = m_storage->getIncomeHistory(m_currentUserId);
     QVariantList list;
-    for(const auto &m : raw) list.append(m);
+    for(const auto &m : raw) {
+        list.append(m);
+    }
     return list;
 }
 
@@ -80,13 +86,18 @@ void MainController::login(const QString &login, const QString &password) {
         if (m_storage->loginUser(login, QString(hash), m_currentUserId, m_budget, m_spent)) {
             m_authorized = true;
 
-            emit budgetChanged(); emit spentChanged(); emit remainingAmountChanged();
-            emit lastExpensesChanged(); emit authorizedChanged();
+            emit budgetChanged();
+            emit spentChanged();
+            emit remainingAmountChanged();
+            emit lastExpensesChanged();
+            emit authorizedChanged();
             refreshData();
         } else {
-            m_authError = m_storage->lastError(); emit authErrorChanged();
+            m_authError = m_storage->lastError();
+            emit authErrorChanged();
         }
-        m_loading = false; emit loadingChanged();
+        m_loading = false;
+        emit loadingChanged();
     });
 }
 
