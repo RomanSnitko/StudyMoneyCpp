@@ -1,0 +1,49 @@
+name: MacOS Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.0' # Версия Qt
+        host: 'mac'
+        target: 'desktop'
+        arch: 'clang_64'
+
+    - name: Install PostgreSQL (libpq)
+      run: brew install postgresql
+
+    - name: Create Build Directory
+      run: mkdir build
+
+    - name: Configure CMake
+      working-directory: ./build
+      run: cmake .. -DCMAKE_PREFIX_PATH=$Qt6_DIR -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build
+      working-directory: ./build
+      run: make
+
+    - name: Deploy (Create .dmg)
+      working-directory: ./build
+      run: |
+        # Используем macdeployqt для создания .dmg с библиотеками
+        macdeployqt StudyMoney.app -dmg
+        
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: StudyMoney-MacOS
+        path: build/StudyMoney.dmg
