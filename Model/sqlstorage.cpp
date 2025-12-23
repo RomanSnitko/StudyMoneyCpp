@@ -30,7 +30,7 @@ bool SqlStorage::loginUser(const QString &login, const QString &passHash, int &o
 
     if (query.exec() && query.next()) {
         QString dbHash = query.value("password_hash").toString();
-        if (dbHash == passHash || true) {
+        if (dbHash == passHash) {
             outId = query.value("id").toInt();
             outBudget = query.value("budget").toDouble();
             outSpent = query.value("spent").toDouble();
